@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import './App.css';
+import axios from 'axios';
 
 function App() {
   const [email, setEmail] = useState('');
@@ -47,10 +48,38 @@ function App() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(email, password, e);
+    console.log('Authenticating...');
+  
+    // Replace with your authentication API URL
+    const authUrl = 'https://prod-oakriverllc-d2d736f6912b.herokuapp.com/api/user/login/';
+  
+    try {
+      const response = await axios.post(authUrl, {
+        email,
+        password
+      }, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+  
+      if (response.status !== 200) {
+        throw new Error('Authentication failed');
+      }
+  
+      const { accessToken } = response.data;
+  
+      // Store token using chrome.storage
+      chrome.runtime.sendMessage({ action: 'storeToken', token: accessToken });
+  
+      console.log('Logged in successfully');
+    } catch (error) {
+      console.error('Error during authentication:', error);
+    }
   };
+  
 
   return (
     <>

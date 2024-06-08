@@ -38,3 +38,11 @@ function modifyLinkedInPosts() {
     }
   });
 }
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === 'storeToken') {
+    chrome.storage.local.set({ accessToken: request.token }, () => {
+      console.log('Token stored successfully');
+    });
+  }
+});
